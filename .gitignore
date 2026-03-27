@@ -1,0 +1,38 @@
+# Dependencies
+node_modules/
+
+# Build
+dist/
+build/
+
+# Environment
+.env
+.env.local
+backend/.env
+
+# Database
+backend/bawi_studio.db
+
+# Python
+backend/__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+
+# Documentation temporaire (garder seulement docs/ et README.md)
+*_TEMP.md
+*_OLD.md
+BACKUP_*.md

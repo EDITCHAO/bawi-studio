@@ -1,0 +1,181 @@
+.hero {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  background: linear-gradient(135deg, var(--dark) 0%, var(--dark-light) 100%);
+  position: relative;
+  overflow: hidden;
+  padding-top: 80px;
+}
+
+.hero .container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  align-items: center;
+}
+
+.hero-content {
+  z-index: 2;
+}
+
+.hero-title {
+  font-size: 3.5rem;
+  font-weight: 800;
+  color: var(--white);
+  line-height: 1.2;
+  margin-bottom: 1.5rem;
+}
+
+.hero-subtitle {
+  font-size: 1.25rem;
+  color: var(--light);
+  margin-bottom: 2rem;
+  line-height: 1.6;
+}
+
+.hero-cta {
+  display: inline-block;
+  background: var(--primary);
+  color: var(--white);
+  padding: 1rem 2.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 1.1rem;
+  transition: all 0.3s;
+}
+
+.hero-cta:hover {
+  background: var(--primary-dark);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3);
+}
+
+.hero-visual {
+  position: relative;
+  height: 550px;
+}
+
+.floating-card {
+  position: absolute;
+  background: rgba(99, 102, 241, 0.15);
+  backdrop-filter: blur(20px);
+  border: 2px solid rgba(99, 102, 241, 0.3);
+  border-radius: 25px;
+  padding: 1.8rem;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+}
+
+.floating-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+
+.floating-card:hover {
+  transform: translateY(-10px) scale(1.05);
+  border-color: rgba(99, 102, 241, 0.6);
+  box-shadow: 0 20px 50px rgba(99, 102, 241, 0.4);
+}
+
+.floating-card:hover::before {
+  opacity: 1;
+}
+
+.card-1 {
+  width: 280px;
+  top: 30px;
+  left: 20px;
+  animation: float 4s ease-in-out infinite;
+}
+
+.card-2 {
+  width: 260px;
+  top: 180px;
+  right: 40px;
+  animation: float 5s ease-in-out infinite;
+}
+
+.card-3 {
+  width: 270px;
+  bottom: 50px;
+  left: 80px;
+  animation: float 4.5s ease-in-out infinite;
+}
+
+.card-icon-bg {
+  width: 70px;
+  height: 70px;
+  background: rgba(99, 102, 241, 0.3);
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.2rem;
+  transition: all 0.4s;
+  position: relative;
+  z-index: 1;
+}
+
+.floating-card:hover .card-icon-bg {
+  background: rgba(99, 102, 241, 0.5);
+  transform: scale(1.1) rotate(5deg);
+}
+
+.card-icon-bg i {
+  font-size: 2.2rem;
+  color: var(--white);
+  transition: all 0.4s;
+}
+
+.floating-card:hover .card-icon-bg i {
+  transform: scale(1.1);
+  text-shadow: 0 0 20px rgba(99, 102, 241, 0.8);
+}
+
+.card-title {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--white);
+  margin-bottom: 0.6rem;
+  position: relative;
+  z-index: 1;
+}
+
+.card-desc {
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.85);
+  line-height: 1.5;
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+@media (max-width: 768px) {
+  .hero .container {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-title {
+    font-size: 2.5rem;
+  }
+
+  .hero-visual {
+    display: none;
+  }
+}
