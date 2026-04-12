@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useState } from 'react';
 import { translations } from '../translations';
 
 const LanguageContext = createContext();
@@ -6,7 +6,7 @@ const LanguageContext = createContext();
 export const useLanguage = () => {
   const context = useContext(LanguageContext);
   if (!context) {
-    throw new Error('useLanguage must be used within LanguageProvider');
+    return { language: 'fr', t: (key) => key, toggleLanguage: () => {} };
   }
   return context;
 };

@@ -52,18 +52,18 @@ const Hero = () => {
     }
   };
 
-  const t = content[language];
+  const currentContent = content[language] || content['fr'];
 
   return (
     <section className="hero">
       <div className="container">
         <div className="hero-content">
-          <h1 className="hero-title">{t.title}</h1>
-          <p className="hero-subtitle">{t.subtitle}</p>
-          <a href="#contact" className="hero-cta">{t.cta}</a>
+          <h1 className="hero-title">{currentContent.title}</h1>
+          <p className="hero-subtitle">{currentContent.subtitle}</p>
+          <a href="#contact" className="hero-cta">{currentContent.cta}</a>
         </div>
         <div className="hero-visual">
-          {t.cards.map((card, index) => (
+          {currentContent.cards.map((card, index) => (
             <div key={index} className={`floating-card card-${index + 1}`}>
               <div className="card-icon-bg">
                 <i className={card.icon}></i>

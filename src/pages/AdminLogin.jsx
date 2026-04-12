@@ -62,7 +62,6 @@ const AdminLogin = () => {
               type="text"
               value={credentials.username}
               onChange={(e) => setCredentials({ ...credentials, username: e.target.value })}
-              placeholder="euloge"
               required
               autoFocus
             />

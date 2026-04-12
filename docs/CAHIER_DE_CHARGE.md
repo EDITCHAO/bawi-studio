@@ -3,7 +3,7 @@
 ## 1. PRÉSENTATION DU PROJET
 
 ### 1.1 Contexte
-BAWI-STUDIO est une entreprise de développement web, mobile et logiciel basée à Lomé, Togo, ciblant l'Afrique de l'Ouest et au-delà. Le projet consiste en la création d'un site vitrine professionnel avec un système de gestion administratif complet.
+ BAWI-STUDIO est une entreprise de développement web, mobile et logiciel basée à Lomé, Togo, ciblant l'Afrique de l'Ouest et au-delà.ojet consiste en la création d'un site vitrine professionnel avec un système de gestion administratif complet.
 
 ### 1.2 Objectifs
 - Présenter les services de BAWI-STUDIO de manière professionnelle

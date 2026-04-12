@@ -1,122 +1,70 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../context/LanguageContext';
+import { API_ENDPOINTS } from '../config';
+import ImageModal from './ImageModal';
 import './Portfolio.css';
 
 const Portfolio = () => {
   const { language } = useLanguage();
+  const [portfolios, setPortfolios] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const content = {
     fr: {
       title: 'Nos Réalisations',
-      subtitle: 'Découvrez quelques projets que nous avons réalisés avec passion',
-      projects: [
-        {
-          title: 'E-Shop Afrique',
-          category: 'E-commerce',
-          desc: 'Plateforme e-commerce complète avec paiement mobile et gestion des stocks',
-          tech: ['React', 'Node.js', 'MongoDB'],
-          color: '#6366f1',
-          image: '/images/E-commerce.jpeg'
-        },
-        {
-          title: 'MediCare App',
-          category: 'Application Mobile',
-          desc: 'Application de prise de rendez-vous médicaux avec géolocalisation',
-          tech: ['React Native', 'Firebase'],
-          color: '#8b5cf6',
-          image: '/images/Application%20Mobile.jpeg'
-        },
-        {
-          title: 'EduLearn Platform',
-          category: 'Plateforme Web',
-          desc: 'Plateforme d\'apprentissage en ligne avec cours vidéo et quiz interactifs',
-          tech: ['Vue.js', 'Laravel', 'MySQL'],
-          color: '#ec4899',
-          image: '/images/Plateforme%20Web.jpeg'
-        },
-        {
-          title: 'AgriTech Dashboard',
-          category: 'Dashboard',
-          desc: 'Tableau de bord pour la gestion agricole avec analyse de données',
-          tech: ['React', 'Python', 'PostgreSQL'],
-          color: '#14b8a6',
-          image: '/images/Dashboard.jpeg'
-        },
-        {
-          title: 'BankPro Mobile',
-          category: 'Fintech',
-          desc: 'Application bancaire mobile avec transferts et paiements sécurisés',
-          tech: ['Flutter', 'Node.js'],
-          color: '#f59e0b',
-          image: '/images/Fintech.jpeg'
-        },
-        {
-          title: 'RestoPro',
-          category: 'Site Vitrine',
-          desc: 'Site vitrine moderne pour chaîne de restaurants avec réservation en ligne',
-          tech: ['Next.js', 'Tailwind'],
-          color: '#ef4444',
-          image: '/images/Site%20Vitrine.jpeg'
-        }
-      ]
+      subtitle: 'Découvrez quelques projets que nous avons réalisés avec passion'
     },
     en: {
       title: 'Our Work',
-      subtitle: 'Discover some projects we have completed with passion',
-      projects: [
-        {
-          title: 'E-Shop Africa',
-          category: 'E-commerce',
-          desc: 'Complete e-commerce platform with mobile payment and inventory management',
-          tech: ['React', 'Node.js', 'MongoDB'],
-          color: '#6366f1',
-          image: '/images/E-commerce.jpeg'
-        },
-        {
-          title: 'MediCare App',
-          category: 'Mobile App',
-          desc: 'Medical appointment booking app with geolocation',
-          tech: ['React Native', 'Firebase'],
-          color: '#8b5cf6',
-          image: '/images/Application%20Mobile.jpeg'
-        },
-        {
-          title: 'EduLearn Platform',
-          category: 'Web Platform',
-          desc: 'Online learning platform with video courses and interactive quizzes',
-          tech: ['Vue.js', 'Laravel', 'MySQL'],
-          color: '#ec4899',
-          image: '/images/Plateforme%20Web.jpeg'
-        },
-        {
-          title: 'AgriTech Dashboard',
-          category: 'Dashboard',
-          desc: 'Agricultural management dashboard with data analysis',
-          tech: ['React', 'Python', 'PostgreSQL'],
-          color: '#14b8a6',
-          image: '/images/Dashboard.jpeg'
-        },
-        {
-          title: 'BankPro Mobile',
-          category: 'Fintech',
-          desc: 'Mobile banking app with secure transfers and payments',
-          tech: ['Flutter', 'Node.js'],
-          color: '#f59e0b',
-          image: '/images/Fintech.jpeg'
-        },
-        {
-          title: 'RestoPro',
-          category: 'Showcase Site',
-          desc: 'Modern showcase site for restaurant chain with online booking',
-          tech: ['Next.js', 'Tailwind'],
-          color: '#ef4444',
-          image: '/images/Site%20Vitrine.jpeg'
-        }
-      ]
+      subtitle: 'Discover some projects we have completed with passion'
     }
   };
 
+  useEffect(() => {
+    fetchPortfolios();
+  }, []);
+
+  const fetchPortfolios = async () => {
+    try {
+      const response = await fetch(API_ENDPOINTS.portfolios);
+      if (response.ok) {
+        const data = await response.json();
+        console.log('📊 Portfolios chargés:', data);
+        setPortfolios(data);
+      }
+    } catch (error) {
+      console.error('Erreur lors du chargement des portfolios:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getImageUrl = (imageUrl) => {
+    if (!imageUrl) return null;
+    
+    // Si c'est une URL complète (http/https), la retourner telle quelle
+    if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
+      return imageUrl;
+    }
+    
+    // Si c'est un chemin relatif, le retourner tel quel (Vite le gérera)
+    return imageUrl;
+  };
+
+  const openImageModal = (imageUrl, title) => {
+    setSelectedImage({ url: imageUrl, title });
+    setIsModalOpen(true);
+  };
+
+  const closeImageModal = () => {
+    setIsModalOpen(false);
+    setSelectedImage(null);
+  };
+
   const t = content[language];
+  const colors = ['#6366f1', '#8b5cf6', '#ec4899', '#14b8a6', '#f59e0b', '#ef4444'];
 
   return (
     <section id="portfolio" className="portfolio">
@@ -124,32 +72,73 @@ const Portfolio = () => {
         <h2 className="section-title">{t.title}</h2>
         <p className="portfolio-subtitle">{t.subtitle}</p>
         <div className="portfolio-grid">
-          {t.projects.map((project, index) => (
-            <div key={index} className="portfolio-card">
-              <div 
-                className="portfolio-image" 
-                style={project.image 
-                  ? { backgroundImage: `url(${project.image})`, backgroundSize: 'cover', backgroundPosition: 'center' }
-                  : { background: `linear-gradient(135deg, ${project.color} 0%, ${project.color}dd 100%)` }
-                }
-              >
-                <div className="portfolio-overlay">
-                  <span className="portfolio-category">{project.category}</span>
+          {loading ? (
+            <p style={{ textAlign: 'center', gridColumn: '1 / -1' }}>Chargement...</p>
+          ) : portfolios.length === 0 ? (
+            <p style={{ textAlign: 'center', gridColumn: '1 / -1' }}>Aucune réalisation pour le moment</p>
+          ) : (
+            portfolios.map((project, index) => {
+              const imageUrl = getImageUrl(project.image_url);
+              console.log('🖼️ Image pour', project.title, ':', imageUrl);
+              
+              return (
+                <div key={project.id} className="portfolio-card">
+                  <div 
+                    className="portfolio-image" 
+                    style={imageUrl 
+                      ? { backgroundImage: `url(${imageUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' }
+                      : { background: `linear-gradient(135deg, ${colors[index % colors.length]} 0%, ${colors[index % colors.length]}dd 100%)` }
+                    }
+                    onClick={() => imageUrl && openImageModal(imageUrl, project.title)}
+                    role="button"
+                    tabIndex={0}
+                    onKeyPress={(e) => {
+                      if (e.key === 'Enter' && imageUrl) {
+                        openImageModal(imageUrl, project.title);
+                      }
+                    }}
+                  >
+                    <div className="portfolio-overlay">
+                      <span className="portfolio-category">{project.category}</span>
+                      {imageUrl && <div className="portfolio-zoom-icon"><i className="fa-solid fa-magnifying-glass-plus"></i></div>}
+                    </div>
+                  </div>
+                  <div className="portfolio-content">
+                    <h3 className="portfolio-title">{project.title}</h3>
+                    <p className="portfolio-desc">{project.description}</p>
+                    {project.technologies && (
+                      <div className="portfolio-tech">
+                        {project.technologies.split(',').map((tech, i) => (
+                          <span key={i} className="tech-badge">{tech.trim()}</span>
+                        ))}
+                      </div>
+                    )}
+                    {project.link && project.link.trim() !== '' && (
+                      <div style={{ marginTop: '10px' }}>
+                        <a 
+                          href={project.link} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          style={{ color: '#6366f1', textDecoration: 'none', fontWeight: 'bold' }}
+                        >
+                          Voir le projet →
+                        </a>
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
-              <div className="portfolio-content">
-                <h3 className="portfolio-title">{project.title}</h3>
-                <p className="portfolio-desc">{project.desc}</p>
-                <div className="portfolio-tech">
-                  {project.tech.map((tech, i) => (
-                    <span key={i} className="tech-badge">{tech}</span>
-                  ))}
-                </div>
-              </div>
-            </div>
-          ))}
+              );
+            })
+          )}
         </div>
       </div>
+
+      <ImageModal 
+        isOpen={isModalOpen}
+        imageUrl={selectedImage?.url}
+        title={selectedImage?.title}
+        onClose={closeImageModal}
+      />
     </section>
   );
 };

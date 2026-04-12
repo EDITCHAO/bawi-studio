@@ -66,19 +66,19 @@ const AcademicSection = () => {
     }
   };
 
-  const t = content[language];
+  const currentContent = content[language] || content['fr'];
 
   return (
     <section className="academic-section">
       <div className="container">
         <div className="academic-header">
-          <h2 className="academic-title">{t.title}</h2>
-          <p className="academic-subtitle">{t.subtitle}</p>
-          <p className="academic-description">{t.description}</p>
+          <h2 className="academic-title">{currentContent.title}</h2>
+          <p className="academic-subtitle">{currentContent.subtitle}</p>
+          <p className="academic-description">{currentContent.description}</p>
         </div>
 
         <div className="academic-features">
-          {t.features.map((feature, index) => (
+          {currentContent.features.map((feature, index) => (
             <div key={index} className="academic-feature">
               <div className="academic-icon">
                 <i className={feature.icon}></i>
@@ -90,8 +90,8 @@ const AcademicSection = () => {
         </div>
 
         <div className="academic-footer">
-          <p className="academic-levels">{t.levels}</p>
-          <a href="#contact" className="academic-cta">{t.cta}</a>
+          <p className="academic-levels">{currentContent.levels}</p>
+          <a href="#contact" className="academic-cta">{currentContent.cta}</a>
         </div>
       </div>
     </section>

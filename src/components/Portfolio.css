@@ -39,6 +39,8 @@
   justify-content: center;
   position: relative;
   overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.3s ease;
 }
 
 .portfolio-image::before {
@@ -119,6 +121,24 @@
   background: var(--primary);
   color: var(--white);
   transform: translateY(-2px);
+}
+
+.portfolio-zoom-icon {
+  position: absolute;
+  font-size: 2.5rem;
+  color: white;
+  opacity: 0;
+  transition: all 0.3s ease;
+  z-index: 10;
+}
+
+.portfolio-image:hover .portfolio-zoom-icon {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+.portfolio-image:hover {
+  transform: scale(1.05);
 }
 
 @media (max-width: 768px) {

@@ -6,7 +6,7 @@
     <link rel="manifest" href="/manifest.json" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#667eea" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="BAWI-STUDIO" />
     <link rel="apple-touch-icon" href="/favicon.svg" />
@@ -20,25 +20,13 @@
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
     
-    <!-- Service Worker Registration -->
+    <!-- Service Worker Registration - DÉSACTIVÉ EN DÉVELOPPEMENT -->
     <script>
-      if ('serviceWorker' in navigator) {
+      if ('serviceWorker' in navigator && false) { // false = désactivé
         window.addEventListener('load', () => {
           navigator.serviceWorker.register('/service-worker.js')
             .then((registration) => {
               console.log('✅ Service Worker enregistré:', registration);
-              
-              // Vérifier les mises à jour
-              registration.addEventListener('updatefound', () => {
-                const newWorker = registration.installing;
-                newWorker.addEventListener('statechange', () => {
-                  if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                    // Nouvelle version disponible
-                    console.log('📦 Nouvelle version disponible');
-                    // Optionnel: afficher une notification
-                  }
-                });
-              });
             })
             .catch((error) => {
               console.error('❌ Erreur Service Worker:', error);

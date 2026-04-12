@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useLanguage } from '../context/LanguageContext';
-import { z } from 'zod';
 import { API_ENDPOINTS } from '../config';
 import './Contact.css';
 
@@ -21,17 +20,6 @@ const Contact = () => {
 
   const isStudent = formData.domain === 'student';
 
-  const contactSchema = z.object({
-    name: z.string().min(2, 'Nom trop court'),
-    email: z.string().email('Email invalide'),
-    contact: z.string().min(8, 'Numéro de contact requis (minimum 8 chiffres)'),
-    domain: z.string().min(1, 'Sélectionnez un domaine'),
-    projectType: z.string().min(1, 'Sélectionnez un type de projet'),
-    budget: z.string().optional(),
-    deadline: z.string().optional(),
-    message: z.string().min(10, 'Message trop court (minimum 10 caractères)')
-  });
-
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
     setStatus({ type: '', message: '' });
@@ -43,9 +31,14 @@ const Contact = () => {
     setStatus({ type: '', message: '' });
 
     try {
-      contactSchema.parse(formData);
+      if (!formData.name || !formData.email || !formData.message) {
+        throw new Error('Veuillez remplir tous les champs requis');
+      }
 
-      // Envoi au backend Python
+      if (formData.message.length < 10) {
+        throw new Error('Le message doit contenir au moins 10 caractères');
+      }
+
       const response = await fetch(API_ENDPOINTS.contact, {
         method: 'POST',
         headers: {
@@ -58,18 +51,23 @@ const Contact = () => {
 
       if (response.ok && result.success) {
         setStatus({ type: 'success', message: t('contact.success') });
-        setFormData({ name: '', email: '', contact: '', domain: '', projectType: '', budget: '', deadline: '', message: '' });
+        setFormData({ 
+          name: '', 
+          email: '', 
+          contact: '', 
+          domain: '', 
+          projectType: '', 
+          budget: '', 
+          deadline: '', 
+          message: '' 
+        });
       } else {
         throw new Error(result.error || 'Erreur d\'envoi');
       }
 
     } catch (error) {
-      if (error instanceof z.ZodError) {
-        setStatus({ type: 'error', message: error.errors[0].message });
-      } else {
-        console.error('Erreur:', error);
-        setStatus({ type: 'error', message: t('contact.error') });
-      }
+      console.error('Erreur:', error);
+      setStatus({ type: 'error', message: error.message || t('contact.error') });
     } finally {
       setIsSubmitting(false);
     }
@@ -108,7 +106,6 @@ const Contact = () => {
               onChange={handleChange}
               required
               minLength="8"
-              pattern="[0-9+\s\-()]+"
               title="Entrez un numéro de téléphone valide (minimum 8 chiffres)"
             />
             
@@ -140,13 +137,8 @@ const Contact = () => {
               <option value="other">{t('contact.projectOther')}</option>
             </select>
 
-            <input
-              type="hidden"
-              name="budget"
-              value={isStudent ? 'N/A (Étudiant)' : formData.budget}
-            />
             <select
-              name="budget_display"
+              name="budget"
               value={formData.budget}
               onChange={(e) => setFormData({...formData, budget: e.target.value})}
               required={!isStudent}
@@ -173,13 +165,8 @@ const Contact = () => {
               )}
             </select>
 
-            <input
-              type="hidden"
-              name="deadline"
-              value={isStudent ? 'N/A (Étudiant)' : formData.deadline}
-            />
             <select
-              name="deadline_display"
+              name="deadline"
               value={formData.deadline}
               onChange={(e) => setFormData({...formData, deadline: e.target.value})}
               required={!isStudent}

@@ -1,4 +1,3 @@
-import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { LanguageProvider } from './context/LanguageContext';
 import Header from './components/Header';
@@ -11,10 +10,10 @@ import Testimonials from './components/Testimonials';
 import Contact from './components/Contact';
 import Footer from './components/Footer';
 import WhatsAppButton from './components/WhatsAppButton';
+import WhyUs from './components/WhyUs';
 import AdminLogin from './pages/AdminLogin';
 import AdminDashboard from './pages/AdminDashboard';
 
-// Composant pour la page principale
 const MainSite = () => (
   <>
     <Header />
@@ -22,6 +21,7 @@ const MainSite = () => (
     <Services />
     <AcademicSection />
     <Portfolio />
+    <WhyUs />
     <About />
     <Testimonials />
     <Contact />
@@ -30,7 +30,6 @@ const MainSite = () => (
   </>
 );
 
-// Route protégée pour le dashboard
 const ProtectedRoute = ({ children }) => {
   const token = localStorage.getItem('admin_token');
   return token ? children : <Navigate to="/admin" replace />;
@@ -39,7 +38,7 @@ const ProtectedRoute = ({ children }) => {
 function App() {
   return (
     <LanguageProvider>
-      <Router>
+      <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <Routes>
           <Route path="/" element={<MainSite />} />
           <Route path="/admin" element={<AdminLogin />} />
