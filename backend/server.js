@@ -118,7 +118,7 @@ app.post('/api/contact', async (req, res) => {
       return res.status(400).json({ error: 'Champs requis manquants' });
     }
 
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from('contact_messages')
       .insert([
         {
@@ -334,7 +334,7 @@ app.post('/api/admin/portfolios/upload', authenticateToken, async (req, res) => 
 // Récupérer tous les portfolios (public)
 app.get('/api/portfolios', async (req, res) => {
   try {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from('portfolios')
       .select('*')
       .order('order_index', { ascending: true });
