@@ -334,20 +334,31 @@ app.post('/api/admin/portfolios/upload', authenticateToken, async (req, res) => 
 // Récupérer tous les portfolios (public)
 app.get('/api/portfolios', async (req, res) => {
   try {
+    console.log('📋 Tentative de récupération des portfolios...');
+    console.log('Supabase URL:', process.env.SUPABASE_URL);
+    
     const { data, error } = await supabaseAdmin
       .from('portfolios')
       .select('*')
       .order('order_index', { ascending: true });
 
     if (error) {
-      console.error('Erreur Supabase:', error);
-      return res.status(500).json({ error: 'Erreur lors de la récupération' });
+      console.error('❌ Erreur Supabase complète:', JSON.stringify(error, null, 2));
+      return res.status(500).json({ 
+        error: 'Erreur lors de la récupération',
+        details: error.message,
+        code: error.code
+      });
     }
 
+    console.log('✅ Portfolios récupérés:', data.length);
     res.json(data);
   } catch (error) {
-    console.error('Erreur:', error);
-    res.status(500).json({ error: 'Erreur serveur' });
+    console.error('❌ Erreur serveur complète:', error);
+    res.status(500).json({ 
+      error: 'Erreur serveur',
+      details: error.message
+    });
   }
 });
 
