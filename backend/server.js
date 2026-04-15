@@ -18,7 +18,9 @@ const corsOptions = {
     'http://localhost:3000',
     'https://bawi-studio.vercel.app',
     'https://www.bawi-studio.com',
-    'https://bawi-studio.com'
+    'https://bawi-studio.com',
+    'https://bawi-studio.onrender.com',
+    'https://bawi-studio-backend.onrender.com'
   ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],

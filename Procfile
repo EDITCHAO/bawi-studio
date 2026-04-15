@@ -1,1 +1,1 @@
-web: cd backend && python app_mysql.py
+web: cd backend && npm start

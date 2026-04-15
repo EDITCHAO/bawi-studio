@@ -10,6 +10,8 @@ services:
         scope: build
       - key: SUPABASE_KEY
         scope: build
+      - key: SUPABASE_SERVICE_KEY
+        scope: build
       - key: JWT_SECRET
         scope: build
       - key: ADMIN_PASSWORD_HASH
