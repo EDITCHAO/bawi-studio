@@ -11,5 +11,14 @@ export default defineConfig({
       port: 5173,
       protocol: 'ws'
     }
+  },
+  build: {
+    outDir: 'dist',
+    sourcemap: false,
+    minify: 'terser'
+  },
+  preview: {
+    host: '0.0.0.0',
+    port: 3000
   }
 });
