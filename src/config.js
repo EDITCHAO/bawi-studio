@@ -3,8 +3,10 @@
  * Backend: Node.js/Express + Supabase
  */
 
-// URL de l'API Backend
-export const API_URL = import.meta.env.VITE_API_URL || 'https://bawi-studio-backend.onrender.com';
+// URL de l'API Backend - Production
+// Utilise la variable d'environnement VITE_API_URL si disponible
+// Sinon utilise l'URL de développement local
+export const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 // Endpoints de l'API
 export const API_ENDPOINTS = {

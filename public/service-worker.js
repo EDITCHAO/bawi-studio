@@ -1,4 +1,8 @@
-// Service Worker pour BAWI-STUDIO PWA
+// Service Worker DÉSACTIVÉ - Cause des problèmes de cache en production
+// Les modifications ne s'affichent pas à cause du cache du Service Worker
+// Pour réactiver, enlever le commentaire et redéployer
+
+/*
 const CACHE_NAME = 'bawi-studio-v1';
 const urlsToCache = [
   '/',
@@ -95,3 +99,4 @@ self.addEventListener('message', (event) => {
     self.skipWaiting();
   }
 });
+*/
