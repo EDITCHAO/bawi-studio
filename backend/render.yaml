@@ -7,14 +7,14 @@ services:
     startCommand: npm start
     envVars:
       - key: SUPABASE_URL
-        scope: build
+        scope: runtime
       - key: SUPABASE_KEY
-        scope: build
+        scope: runtime
       - key: SUPABASE_SERVICE_KEY
-        scope: build
+        scope: runtime
       - key: JWT_SECRET
-        scope: build
+        scope: runtime
       - key: ADMIN_PASSWORD_HASH
-        scope: build
+        scope: runtime
       - key: PORT
         value: 10000
