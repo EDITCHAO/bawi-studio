@@ -6,5 +6,11 @@
       "source": "/(.*)",
       "destination": "/index.html"
     }
+  ],
+  "experimentalServices": [
+    {
+      "name": "bawi-studio-frontend",
+      "use": "@vercel/static"
+    }
   ]
 }
