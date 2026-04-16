@@ -9,8 +9,6 @@
     }
   ],
   "experimentalServices": {
-    "frontend": {
-      "use": "@vercel/static"
-    }
+    "frontend": {}
   }
 }
