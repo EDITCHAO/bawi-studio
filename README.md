@@ -4,10 +4,11 @@ Site one-page moderne et minimaliste, bilingue (Français/Anglais), avec dashboa
 
 ## 🚀 Démarrage Rapide
 
-### Backend
+### Backend (Node.js/Express)
 ```bash
 cd backend
-python app.py
+npm install
+npm start
 ```
 
 ### Frontend
@@ -18,6 +19,7 @@ npm run dev
 ### Accès
 - **Site:** http://localhost:5173
 - **Dashboard Admin:** http://localhost:5173/admin/dashboard
+- **Backend API:** http://localhost:5000
 - **Identifiants:** me contacter +228 99253843
 
 ## ✨ Fonctionnalités
@@ -25,18 +27,18 @@ npm run dev
 ### Site Public
 - Design moderne et responsive
 - Système bilingue FR/EN
-- Formulaire de contact intelligent
+- Formulaire de contact intelligent avec upload cahier de charge
 - Bouton WhatsApp flottant
 - Section accompagnement académique
-- Portfolio avec 6 projets
+- Portfolio avec gestion admin
 
 ### Dashboard Admin
-- 5 sections: Vue d'ensemble, Clients, Étudiants, Acceptés, Corbeille
-- Recherche et filtres avancés
-- Gestion des statuts (Nouveau, Lu, En cours, Terminé)
-- Acceptation/Suppression de messages
+- Gestion des messages clients
 - Corbeille avec restauration
-- Modal de détails complets
+- Upload et visualisation des cahiers de charge
+- Gestion des réalisations (portfolio)
+- Filtrage par domaine d'activité
+- Affichage du budget et délai
 
 ## 📚 Documentation
 
@@ -49,12 +51,13 @@ Voir le guide complet: [docs/GUIDE_COMPLET.md](docs/GUIDE_COMPLET.md)
 - React Router DOM
 - Zod (validation)
 - Font Awesome 6.5
+- Supabase JS Client
 
 ### Backend
-- Python 3 + Flask
-- SQLite (base embarquée)
-- Flask-JWT-Extended
-- bcrypt
+- Node.js + Express
+- Supabase (PostgreSQL + Storage)
+- JWT (authentification)
+- bcryptjs (hachage)
 
 ## 📞 Contact
 
