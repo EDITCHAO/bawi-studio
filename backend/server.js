@@ -184,7 +184,7 @@ app.post('/api/contact', async (req, res) => {
     console.error('❌ Erreur serveur:', error);
     res.status(500).json({ error: `Erreur serveur: ${error.message}` });
   }
-});});
+});
 
 // Récupérer tous les messages clients (admin)
 app.get('/api/admin/client-messages', authenticateToken, async (req, res) => {
