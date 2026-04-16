@@ -10,19 +10,46 @@ const Contact = () => {
     email: '',
     contact: '',
     domain: '',
+    customDomain: '',
     projectType: '',
     budget: '',
     deadline: '',
     message: ''
   });
+  const [cahierDeCharge, setCahierDeCharge] = useState(null);
+  const [cahierDeChargePreview, setCahierDeChargePreview] = useState('');
   const [status, setStatus] = useState({ type: '', message: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const isStudent = formData.domain === 'student';
+  const isOtherDomain = formData.domain === 'other';
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
     setStatus({ type: '', message: '' });
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // Vérifier le type de fichier
+      const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'text/plain'];
+      
+      if (!allowedTypes.includes(file.type)) {
+        setStatus({ type: 'error', message: 'Format de fichier non autorisé. Acceptés: PDF, Word, Excel, TXT' });
+        return;
+      }
+
+      // Vérifier la taille (max 10MB)
+      if (file.size > 10 * 1024 * 1024) {
+        setStatus({ type: 'error', message: 'Le fichier ne doit pas dépasser 10MB' });
+        return;
+      }
+
+      setCahierDeCharge(file);
+      setCahierDeChargePreview(file.name);
+      setStatus({ type: '', message: '' });
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -39,12 +66,25 @@ const Contact = () => {
         throw new Error('Le message doit contenir au moins 10 caractères');
       }
 
+      // Créer un FormData pour envoyer le fichier
+      const submitData = new FormData();
+      submitData.append('name', formData.name);
+      submitData.append('email', formData.email);
+      submitData.append('contact', formData.contact);
+      submitData.append('domain', formData.domain === 'other' ? formData.customDomain : formData.domain);
+      submitData.append('projectType', formData.projectType);
+      submitData.append('budget', formData.budget);
+      submitData.append('deadline', formData.deadline);
+      submitData.append('message', formData.message);
+      
+      // Ajouter le fichier s'il existe
+      if (cahierDeCharge) {
+        submitData.append('cahierDeCharge', cahierDeCharge);
+      }
+
       const response = await fetch(API_ENDPOINTS.contact, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(formData)
+        body: submitData
       });
 
       const result = await response.json();
@@ -56,11 +96,14 @@ const Contact = () => {
           email: '', 
           contact: '', 
           domain: '', 
+          customDomain: '',
           projectType: '', 
           budget: '', 
           deadline: '', 
           message: '' 
         });
+        setCahierDeCharge(null);
+        setCahierDeChargePreview('');
       } else {
         throw new Error(result.error || 'Erreur d\'envoi');
       }
@@ -121,7 +164,52 @@ const Contact = () => {
               <option value="student">{t('contact.domainStudent')}</option>
               <option value="individual">{t('contact.domainIndividual')}</option>
               <option value="ngo">{t('contact.domainNGO')}</option>
+              <option value="other">Autre</option>
             </select>
+
+            {isOtherDomain && (
+              <input
+                type="text"
+                name="customDomain"
+                placeholder="Précisez votre domaine d'activité *"
+                value={formData.customDomain}
+                onChange={handleChange}
+                required
+                style={{ padding: '1rem', border: '2px solid #667eea', borderRadius: '8px', fontSize: '1rem', fontFamily: 'inherit', background: '#f0f4ff' }}
+              />
+            )}
+
+            <div className="file-upload-section">
+              <label htmlFor="cahierDeCharge" className="file-upload-label">
+                <i className="fa-solid fa-file-upload"></i> Cahier de charge (optionnel)
+              </label>
+              <input
+                type="file"
+                id="cahierDeCharge"
+                onChange={handleFileChange}
+                accept=".pdf,.doc,.docx,.xls,.xlsx,.txt"
+                style={{ display: 'none' }}
+              />
+              <label htmlFor="cahierDeCharge" className="file-upload-btn">
+                <i className="fa-solid fa-cloud-arrow-up"></i> Choisir un fichier
+              </label>
+              {cahierDeChargePreview && (
+                <div className="file-preview">
+                  <i className="fa-solid fa-file-check"></i>
+                  <span>{cahierDeChargePreview}</span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setCahierDeCharge(null);
+                      setCahierDeChargePreview('');
+                    }}
+                    className="file-remove-btn"
+                  >
+                    <i className="fa-solid fa-times"></i>
+                  </button>
+                </div>
+              )}
+            </div>
             
             <select
               name="projectType"

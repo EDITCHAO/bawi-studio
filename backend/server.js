@@ -110,13 +110,48 @@ app.post('/api/admin/login', async (req, res) => {
 // Soumettre un message de contact
 app.post('/api/contact', async (req, res) => {
   try {
-    const { name, email, contact, domain, projectType, budget, deadline, message } = req.body;
+    const { name, email, contact, domain, customDomain, projectType, budget, deadline, message } = req.body;
+    let cahierDeChargeUrl = null;
 
-    console.log('📨 Message reçu:', { name, email, contact, domain, projectType, budget, deadline, message });
+    console.log('📨 Message reçu:', { name, email, contact, domain, customDomain, projectType, budget, deadline, message });
 
     if (!name || !email || !message) {
       return res.status(400).json({ error: 'Champs requis manquants' });
     }
+
+    // Gérer l'upload du cahier de charge s'il existe
+    if (req.files && req.files.cahierDeCharge) {
+      try {
+        const file = req.files.cahierDeCharge;
+        const fileName = `cahier-${Date.now()}-${file.name}`;
+
+        // Uploader sur Supabase Storage
+        const { data, error: uploadError } = await supabase.storage
+          .from('cahiers-de-charge')
+          .upload(fileName, file.data, {
+            contentType: file.mimetype
+          });
+
+        if (uploadError) {
+          console.error('❌ Erreur upload Supabase:', uploadError);
+          return res.status(500).json({ error: 'Erreur lors de l\'upload du fichier' });
+        }
+
+        // Obtenir l'URL publique
+        const { data: publicData } = supabase.storage
+          .from('cahiers-de-charge')
+          .getPublicUrl(fileName);
+
+        cahierDeChargeUrl = publicData.publicUrl;
+        console.log('✅ Fichier uploadé:', cahierDeChargeUrl);
+      } catch (uploadErr) {
+        console.error('❌ Erreur upload:', uploadErr);
+        // Continuer même si l'upload échoue (le fichier est optionnel)
+      }
+    }
+
+    // Si le domaine est "other", utiliser customDomain
+    const finalDomain = domain === 'other' ? customDomain : domain;
 
     const { data, error } = await supabaseAdmin
       .from('contact_messages')
@@ -125,12 +160,13 @@ app.post('/api/contact', async (req, res) => {
           name,
           email,
           phone: contact || null,
-          domain: domain || null,
+          domain: finalDomain || null,
           project_type: projectType || null,
           budget: budget || null,
           deadline: deadline || null,
           subject: null,
           message,
+          cahier_de_charge_url: cahierDeChargeUrl,
           created_at: new Date().toISOString(),
           read: false
         }
@@ -148,7 +184,7 @@ app.post('/api/contact', async (req, res) => {
     console.error('❌ Erreur serveur:', error);
     res.status(500).json({ error: `Erreur serveur: ${error.message}` });
   }
-});
+});});
 
 // Récupérer tous les messages clients (admin)
 app.get('/api/admin/client-messages', authenticateToken, async (req, res) => {
@@ -235,6 +271,145 @@ app.delete('/api/admin/client-messages/:id', authenticateToken, async (req, res)
   try {
     const { id } = req.params;
 
+    // Récupérer le message pour obtenir l'URL du cahier
+    const { data: message, error: fetchError } = await supabase
+      .from('contact_messages')
+      .select('cahier_de_charge_url')
+      .eq('id', id)
+      .single();
+
+    if (fetchError) {
+      console.error('Erreur lors de la récupération du message:', fetchError);
+      return res.status(500).json({ error: 'Message non trouvé' });
+    }
+
+    // Supprimer le fichier du cahier de charge s'il existe
+    if (message && message.cahier_de_charge_url) {
+      try {
+        // Extraire le nom du fichier de l'URL
+        const fileName = message.cahier_de_charge_url.split('/').pop();
+        
+        console.log('🗑️ Suppression du fichier:', fileName);
+        
+        const { error: deleteFileError } = await supabase.storage
+          .from('cahiers-de-charge')
+          .remove([fileName]);
+
+        if (deleteFileError) {
+          console.error('⚠️ Erreur lors de la suppression du fichier:', deleteFileError);
+          // Continuer même si la suppression du fichier échoue
+        } else {
+          console.log('✅ Fichier supprimé');
+        }
+      } catch (fileError) {
+        console.error('⚠️ Erreur lors de la suppression du fichier:', fileError);
+        // Continuer même si la suppression du fichier échoue
+      }
+    }
+
+    // Soft delete - marquer comme supprimé au lieu de vraiment supprimer
+    const { error } = await supabase
+      .from('contact_messages')
+      .update({ deleted_at: new Date().toISOString() })
+      .eq('id', id);
+
+    if (error) {
+      console.error('Erreur Supabase:', error);
+      return res.status(500).json({ error: 'Erreur lors de la suppression' });
+    }
+
+    res.json({ success: true, message: 'Message et fichier supprimés' });
+  } catch (error) {
+    console.error('Erreur:', error);
+    res.status(500).json({ error: 'Erreur serveur' });
+  }
+});
+
+// Récupérer les messages supprimés (corbeille)
+app.get('/api/admin/client-messages/trash/list', authenticateToken, async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from('contact_messages')
+      .select('*')
+      .not('deleted_at', 'is', null)
+      .order('deleted_at', { ascending: false });
+
+    if (error) {
+      console.error('Erreur Supabase:', error);
+      return res.status(500).json({ error: 'Erreur lors de la récupération' });
+    }
+
+    res.json(data);
+  } catch (error) {
+    console.error('Erreur:', error);
+    res.status(500).json({ error: 'Erreur serveur' });
+  }
+});
+
+// Restaurer un message de la corbeille
+app.post('/api/admin/client-messages/:id/restore', authenticateToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const { error } = await supabase
+      .from('contact_messages')
+      .update({ deleted_at: null })
+      .eq('id', id);
+
+    if (error) {
+      console.error('Erreur Supabase:', error);
+      return res.status(500).json({ error: 'Erreur lors de la restauration' });
+    }
+
+    res.json({ success: true, message: 'Message restauré' });
+  } catch (error) {
+    console.error('Erreur:', error);
+    res.status(500).json({ error: 'Erreur serveur' });
+  }
+});
+
+// Supprimer définitivement un message
+app.delete('/api/admin/client-messages/:id/permanent', authenticateToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Récupérer le message pour obtenir l'URL du cahier
+    const { data: message, error: fetchError } = await supabase
+      .from('contact_messages')
+      .select('cahier_de_charge_url')
+      .eq('id', id)
+      .single();
+
+    if (fetchError) {
+      console.error('Erreur lors de la récupération du message:', fetchError);
+      return res.status(500).json({ error: 'Message non trouvé' });
+    }
+
+    // Supprimer le fichier du cahier de charge s'il existe
+    if (message && message.cahier_de_charge_url) {
+      try {
+        // Extraire le nom du fichier de l'URL
+        const fileName = message.cahier_de_charge_url.split('/').pop();
+        
+        console.log('🗑️ Suppression du fichier:', fileName);
+        
+        const { error: deleteFileError } = await supabase.storage
+          .from('cahiers-de-charge')
+          .remove([fileName]);
+
+        if (deleteFileError) {
+          console.error('⚠️ Erreur lors de la suppression du fichier:', deleteFileError);
+          // Continuer même si la suppression du fichier échoue
+        } else {
+          console.log('✅ Fichier supprimé');
+        }
+      } catch (fileError) {
+        console.error('⚠️ Erreur lors de la suppression du fichier:', fileError);
+        // Continuer même si la suppression du fichier échoue
+      }
+    }
+
+    // Supprimer le message de la base de données
     const { error } = await supabase
       .from('contact_messages')
       .delete()
@@ -245,7 +420,7 @@ app.delete('/api/admin/client-messages/:id', authenticateToken, async (req, res)
       return res.status(500).json({ error: 'Erreur lors de la suppression' });
     }
 
-    res.json({ success: true, message: 'Message supprimé' });
+    res.json({ success: true, message: 'Message et fichier supprimés définitivement' });
   } catch (error) {
     console.error('Erreur:', error);
     res.status(500).json({ error: 'Erreur serveur' });
