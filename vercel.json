@@ -8,10 +8,9 @@
       "destination": "/index.html"
     }
   ],
-  "experimentalServices": [
-    {
-      "name": "frontend",
+  "experimentalServices": {
+    "frontend": {
       "use": "@vercel/static"
     }
-  ]
+  }
 }
