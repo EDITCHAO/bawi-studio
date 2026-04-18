@@ -1,70 +1,60 @@
-# BAWI-STUDIO - Site Vitrine Professionnel
+# Bawi Studio
 
-Site one-page moderne et minimaliste, bilingue (Français/Anglais), avec dashboard administrateur complet.
-
-## 🚀 Démarrage Rapide
-
-### Backend (Node.js/Express)
-```bash
-cd backend
-npm install
-npm start
-```
-
-### Frontend
-```bash
-npm run dev
-```
-
-### Accès
-- **Site:** http://localhost:5173
-- **Dashboard Admin:** http://localhost:5173/admin/dashboard
-- **Backend API:** http://localhost:5000
-- **Identifiants:** me contacter +228 99253843
-
-## ✨ Fonctionnalités
-
-### Site Public
-- Design moderne et responsive
-- Système bilingue FR/EN
-- Formulaire de contact intelligent avec upload cahier de charge
-- Bouton WhatsApp flottant
-- Section accompagnement académique
-- Portfolio avec gestion admin
-
-### Dashboard Admin
-- Gestion des messages clients
-- Corbeille avec restauration
-- Upload et visualisation des cahiers de charge
-- Gestion des réalisations (portfolio)
-- Filtrage par domaine d'activité
-- Affichage du budget et délai
+Portfolio et plateforme de gestion de projets pour Bawi Studio.
 
 ## 📚 Documentation
 
-Voir le guide complet: [docs/GUIDE_COMPLET.md](docs/GUIDE_COMPLET.md)
+Toute la documentation est dans le dossier `docs/`.
 
-## 🛠️ Technologies
+### Commencer ici
 
-### Frontend
-- React 18 + Vite
-- React Router DOM
-- Zod (validation)
-- Font Awesome 6.5
-- Supabase JS Client
+1. **[docs/START_HERE.md](docs/START_HERE.md)** - Point de départ (lire en premier!)
+2. **[docs/README.md](docs/README.md)** - Vue d'ensemble du projet
+3. **[docs/QUICK_DEPLOY.md](docs/QUICK_DEPLOY.md)** - Déploiement rapide (30-40 min)
 
-### Backend
-- Node.js + Express
-- Supabase (PostgreSQL + Storage)
-- JWT (authentification)
-- bcryptjs (hachage)
+### Documentation complète
 
-## 📞 Contact
+- **[docs/INDEX.md](docs/INDEX.md)** - Index de toute la documentation
+- **[docs/DEPLOYMENT_GUIDE.md](docs/DEPLOYMENT_GUIDE.md)** - Guide complet de déploiement
+- **[docs/API_DOCUMENTATION.md](docs/API_DOCUMENTATION.md)** - Documentation API
+- **[docs/PROJECT_STRUCTURE.md](docs/PROJECT_STRUCTURE.md)** - Structure du projet
+- **[docs/ENVIRONMENT_SETUP.md](docs/ENVIRONMENT_SETUP.md)** - Configuration des variables
+- **[docs/BEST_PRACTICES.md](docs/BEST_PRACTICES.md)** - Bonnes pratiques
+- **[docs/FAQ.md](docs/FAQ.md)** - Questions fréquentes
+- **[docs/SUPPORT.md](docs/SUPPORT.md)** - Canaux de support
+- **[docs/SECURITY.md](docs/SECURITY.md)** - Politique de sécurité
+- **[docs/CONTRIBUTING.md](docs/CONTRIBUTING.md)** - Guide de contribution
 
-- Email: editchaosam@gmail.com
-- Téléphone: +228 99 25 38 43
-- Localisation: Lomé, Togo
+## 🚀 Démarrage rapide
+
+### Développement local
+
+```bash
+# Frontend
+npm install
+npm run dev
+
+# Backend (dans un autre terminal)
+cd backend
+npm install
+npm run dev
+```
+
+### Déploiement
+
+Voir [docs/QUICK_DEPLOY.md](docs/QUICK_DEPLOY.md) pour le déploiement rapide.
+
+## 🏗️ Architecture
+
+- **Frontend**: React + Vite (Vercel)
+- **Backend**: Node.js + Express (Render)
+- **Base de données**: Supabase PostgreSQL
+- **Stockage**: Supabase Storage
+
+## 📞 Support
+
+Pour toute question, consulter [docs/SUPPORT.md](docs/SUPPORT.md).
 
 ---
 
-© 2026 BAWI-STUDIO. Tous droits réservés.
+**Dernière mise à jour**: 2026-04-18

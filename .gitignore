@@ -1,38 +1,42 @@
 # Dependencies
 node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
-# Build
-dist/
-build/
-
-# Environment
+# Environment variables
 .env
 .env.local
-backend/.env
+.env.*.local
 
-# Database
-backend/bawi_studio.db
-
-# Python
-backend/__pycache__/
-*.pyc
-*.pyo
-*.pyd
-.Python
+# Build outputs
+dist/
+build/
+*.tsbuildinfo
 
 # IDE
 .vscode/
 .idea/
+*.swp
+*.swo
+*~
+.DS_Store
 
 # OS
-.DS_Store
 Thumbs.db
+.DS_Store
 
 # Logs
+logs/
 *.log
-npm-debug.log*
 
-# Documentation temporaire (garder seulement docs/ et README.md)
-*_TEMP.md
-*_OLD.md
-BACKUP_*.md
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
