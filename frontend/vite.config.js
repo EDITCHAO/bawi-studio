@@ -4,7 +4,7 @@ import path from 'path'
 
 export default defineConfig({
   plugins: [react()],
-  root: '.',
+  root: './frontend',
   build: {
     outDir: 'dist',
     emptyOutDir: true,
