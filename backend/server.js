@@ -1,7 +1,6 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import fileUpload from 'express-fileupload';
 import { createClient } from '@supabase/supabase-js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
@@ -30,7 +29,7 @@ const corsOptions = {
 // Middleware
 app.use(cors(corsOptions));
 app.use(express.json());
-app.use(fileUpload());
+app.use(express.urlencoded({ extended: true }));
 
 // Supabase client
 const supabase = createClient(
@@ -111,43 +110,11 @@ app.post('/api/admin/login', async (req, res) => {
 app.post('/api/contact', async (req, res) => {
   try {
     const { name, email, contact, domain, customDomain, projectType, budget, deadline, message } = req.body;
-    let cahierDeChargeUrl = null;
 
     console.log('📨 Message reçu:', { name, email, contact, domain, customDomain, projectType, budget, deadline, message });
 
     if (!name || !email || !message) {
       return res.status(400).json({ error: 'Champs requis manquants' });
-    }
-
-    // Gérer l'upload du cahier de charge s'il existe
-    if (req.files && req.files.cahierDeCharge) {
-      try {
-        const file = req.files.cahierDeCharge;
-        const fileName = `cahier-${Date.now()}-${file.name}`;
-
-        // Uploader sur Supabase Storage
-        const { data, error: uploadError } = await supabase.storage
-          .from('cahiers-de-charge')
-          .upload(fileName, file.data, {
-            contentType: file.mimetype
-          });
-
-        if (uploadError) {
-          console.error('❌ Erreur upload Supabase:', uploadError);
-          return res.status(500).json({ error: 'Erreur lors de l\'upload du fichier' });
-        }
-
-        // Obtenir l'URL publique
-        const { data: publicData } = supabase.storage
-          .from('cahiers-de-charge')
-          .getPublicUrl(fileName);
-
-        cahierDeChargeUrl = publicData.publicUrl;
-        console.log('✅ Fichier uploadé:', cahierDeChargeUrl);
-      } catch (uploadErr) {
-        console.error('❌ Erreur upload:', uploadErr);
-        // Continuer même si l'upload échoue (le fichier est optionnel)
-      }
     }
 
     // Si le domaine est "other", utiliser customDomain
@@ -166,7 +133,7 @@ app.post('/api/contact', async (req, res) => {
           deadline: deadline || null,
           subject: null,
           message,
-          cahier_de_charge_url: cahierDeChargeUrl,
+          cahier_de_charge_url: null,
           created_at: new Date().toISOString(),
           read: false
         }

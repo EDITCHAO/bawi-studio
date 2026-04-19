@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import { API_ENDPOINTS } from '../config';
+import { getCountryCodeOptions } from '../data/countryCodes';
 import './Contact.css';
 
 const Contact = () => {
@@ -8,6 +9,7 @@ const Contact = () => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
+    countryCode: '+228', // Togo par défaut
     contact: '',
     domain: '',
     customDomain: '',
@@ -16,8 +18,6 @@ const Contact = () => {
     deadline: '',
     message: ''
   });
-  const [cahierDeCharge, setCahierDeCharge] = useState(null);
-  const [cahierDeChargePreview, setCahierDeChargePreview] = useState('');
   const [status, setStatus] = useState({ type: '', message: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -27,29 +27,6 @@ const Contact = () => {
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
     setStatus({ type: '', message: '' });
-  };
-
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      // Vérifier le type de fichier
-      const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'text/plain'];
-      
-      if (!allowedTypes.includes(file.type)) {
-        setStatus({ type: 'error', message: 'Format de fichier non autorisé. Acceptés: PDF, Word, Excel, TXT' });
-        return;
-      }
-
-      // Vérifier la taille (max 10MB)
-      if (file.size > 10 * 1024 * 1024) {
-        setStatus({ type: 'error', message: 'Le fichier ne doit pas dépasser 10MB' });
-        return;
-      }
-
-      setCahierDeCharge(file);
-      setCahierDeChargePreview(file.name);
-      setStatus({ type: '', message: '' });
-    }
   };
 
   const handleSubmit = async (e) => {
@@ -66,34 +43,42 @@ const Contact = () => {
         throw new Error('Le message doit contenir au moins 10 caractères');
       }
 
-      // Créer un FormData pour envoyer le fichier
+      // Créer un FormData pour envoyer les données
       const submitData = new FormData();
       submitData.append('name', formData.name);
       submitData.append('email', formData.email);
-      submitData.append('contact', formData.contact);
+      submitData.append('contact', `${formData.countryCode}${formData.contact}`);
       submitData.append('domain', formData.domain === 'other' ? formData.customDomain : formData.domain);
       submitData.append('projectType', formData.projectType);
       submitData.append('budget', formData.budget);
       submitData.append('deadline', formData.deadline);
       submitData.append('message', formData.message);
-      
-      // Ajouter le fichier s'il existe
-      if (cahierDeCharge) {
-        submitData.append('cahierDeCharge', cahierDeCharge);
-      }
+
+      console.log('📤 Envoi du formulaire vers:', API_ENDPOINTS.contact);
 
       const response = await fetch(API_ENDPOINTS.contact, {
         method: 'POST',
         body: submitData
       });
 
-      const result = await response.json();
+      console.log('📥 Réponse reçue:', response.status, response.statusText);
+
+      let result;
+      try {
+        const responseText = await response.text();
+        console.log('📄 Texte de réponse:', responseText);
+        result = JSON.parse(responseText);
+      } catch (parseError) {
+        console.error('❌ Erreur parsing JSON:', parseError);
+        throw new Error('Erreur serveur: réponse invalide');
+      }
 
       if (response.ok && result.success) {
         setStatus({ type: 'success', message: t('contact.success') });
         setFormData({ 
           name: '', 
           email: '', 
+          countryCode: '+228',
           contact: '', 
           domain: '', 
           customDomain: '',
@@ -102,14 +87,14 @@ const Contact = () => {
           deadline: '', 
           message: '' 
         });
-        setCahierDeCharge(null);
-        setCahierDeChargePreview('');
       } else {
-        throw new Error(result.error || 'Erreur d\'envoi');
+        const errorMessage = result.error || result.message || 'Erreur d\'envoi';
+        console.error('❌ Erreur du serveur:', errorMessage);
+        throw new Error(errorMessage);
       }
 
     } catch (error) {
-      console.error('Erreur:', error);
+      console.error('❌ Erreur complète:', error);
       setStatus({ type: 'error', message: error.message || t('contact.error') });
     } finally {
       setIsSubmitting(false);
@@ -141,16 +126,41 @@ const Contact = () => {
               onChange={handleChange}
               required
             />
-            <input
-              type="tel"
-              name="contact"
-              placeholder={t('contact.contactNumber') + ' *'}
-              value={formData.contact}
-              onChange={handleChange}
-              required
-              minLength="8"
-              title="Entrez un numéro de téléphone valide (minimum 8 chiffres)"
-            />
+            
+            <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
+              <select
+                name="countryCode"
+                value={formData.countryCode}
+                onChange={handleChange}
+                style={{ 
+                  padding: '1rem', 
+                  border: '2px solid #e2e8f0', 
+                  borderRadius: '8px', 
+                  fontSize: '1rem', 
+                  fontFamily: 'inherit',
+                  minWidth: '150px',
+                  flex: '0 0 auto'
+                }}
+              >
+                {getCountryCodeOptions().map((option, index) => (
+                  <option key={index} value={option.code}>
+                    {option.flag} {option.code} - {option.country}
+                  </option>
+                ))}
+              </select>
+              
+              <input
+                type="tel"
+                name="contact"
+                placeholder={t('contact.contactNumber') + ' *'}
+                value={formData.contact}
+                onChange={handleChange}
+                required
+                minLength="8"
+                title="Entrez un numéro de téléphone valide (minimum 8 chiffres)"
+                style={{ flex: '1' }}
+              />
+            </div>
             
             <select
               name="domain"
@@ -179,38 +189,6 @@ const Contact = () => {
               />
             )}
 
-            <div className="file-upload-section">
-              <label htmlFor="cahierDeCharge" className="file-upload-label">
-                <i className="fa-solid fa-file-upload"></i> Cahier de charge (optionnel)
-              </label>
-              <input
-                type="file"
-                id="cahierDeCharge"
-                onChange={handleFileChange}
-                accept=".pdf,.doc,.docx,.xls,.xlsx,.txt"
-                style={{ display: 'none' }}
-              />
-              <label htmlFor="cahierDeCharge" className="file-upload-btn">
-                <i className="fa-solid fa-cloud-arrow-up"></i> Choisir un fichier
-              </label>
-              {cahierDeChargePreview && (
-                <div className="file-preview">
-                  <i className="fa-solid fa-file-check"></i>
-                  <span>{cahierDeChargePreview}</span>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setCahierDeCharge(null);
-                      setCahierDeChargePreview('');
-                    }}
-                    className="file-remove-btn"
-                  >
-                    <i className="fa-solid fa-times"></i>
-                  </button>
-                </div>
-              )}
-            </div>
-            
             <select
               name="projectType"
               value={formData.projectType}
