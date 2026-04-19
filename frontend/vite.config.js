@@ -4,7 +4,6 @@ import path from 'path'
 
 export default defineConfig({
   plugins: [react()],
-  root: './frontend',
   build: {
     outDir: 'dist',
     emptyOutDir: true,
@@ -28,8 +27,5 @@ export default defineConfig({
     alias: {
       '@': path.resolve(__dirname, './src'),
     },
-  },
-  server: {
-    middlewareMode: true,
   },
 })
