@@ -9,27 +9,49 @@ dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+const NODE_ENV = process.env.NODE_ENV || 'development';
 
-// Configuration CORS
+// Validation des variables d'environnement requises
+const requiredEnvVars = ['SUPABASE_URL', 'SUPABASE_KEY', 'SUPABASE_SERVICE_KEY', 'JWT_SECRET', 'ADMIN_PASSWORD_HASH'];
+const missingEnvVars = requiredEnvVars.filter(varName => !process.env[varName]);
+
+if (missingEnvVars.length > 0) {
+  console.error('❌ ERREUR: Variables d\'environnement manquantes:', missingEnvVars);
+  console.error('Assurez-vous que les variables suivantes sont définies:');
+  missingEnvVars.forEach(varName => console.error(`  - ${varName}`));
+  process.exit(1);
+}
+
+// Configuration CORS - Dynamique selon l'environnement
+const corsOrigins = [
+  'http://localhost:5173',
+  'http://localhost:3000',
+  'https://bawi-studio.vercel.app',
+  'https://www.bawi-studio.com',
+  'https://bawi-studio.com',
+  'https://bawi-studio.onrender.com',
+  'https://bawi-studio-backend.onrender.com'
+];
+
+// En développement, accepter aussi les requêtes sans origin
 const corsOptions = {
-  origin: [
-    'http://localhost:5173',
-    'http://localhost:3000',
-    'https://bawi-studio.vercel.app',
-    'https://www.bawi-studio.com',
-    'https://bawi-studio.com',
-    'https://bawi-studio.onrender.com',
-    'https://bawi-studio-backend.onrender.com'
-  ],
+  origin: NODE_ENV === 'development' ? true : corsOrigins,
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  optionsSuccessStatus: 200
 };
 
 // Middleware
 app.use(cors(corsOptions));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// Middleware de logging
+app.use((req, res, next) => {
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.path}`);
+  next();
+});
 
 // Supabase client
 const supabase = createClient(
@@ -625,5 +647,27 @@ app.delete('/api/admin/portfolios/:id', authenticateToken, async (req, res) => {
 
 app.listen(PORT, () => {
   console.log(`✅ Backend running on port ${PORT}`);
+  console.log(`📍 Environment: ${NODE_ENV}`);
   console.log(`📍 Health check: http://localhost:${PORT}/api/health`);
+});
+
+// Graceful shutdown
+process.on('SIGTERM', () => {
+  console.log('SIGTERM reçu. Arrêt gracieux du serveur...');
+  process.exit(0);
+});
+
+process.on('SIGINT', () => {
+  console.log('SIGINT reçu. Arrêt gracieux du serveur...');
+  process.exit(0);
+});
+
+// Gestion des erreurs non capturées
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('❌ Unhandled Rejection at:', promise, 'reason:', reason);
+});
+
+process.on('uncaughtException', (error) => {
+  console.error('❌ Uncaught Exception:', error);
+  process.exit(1);
 });

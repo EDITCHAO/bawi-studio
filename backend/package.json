@@ -4,7 +4,8 @@
   "type": "module",
   "scripts": {
     "start": "node server.js",
-    "dev": "node --watch server.js"
+    "dev": "node --watch server.js",
+    "verify": "node verify-deployment.js"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.38.4",
