@@ -263,7 +263,7 @@ app.put('/api/admin/client-messages/:id', authenticateToken, async (req, res) =>
   }
 });
 
-// Supprimer un message
+// Supprimer un message (soft delete)
 app.delete('/api/admin/client-messages/:id', authenticateToken, async (req, res) => {
   try {
     const { id } = req.params;

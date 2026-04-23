@@ -292,21 +292,14 @@ const AdminDashboard = () => {
 
       {error && <div className="error-message">{error}</div>}
 
-      {/* Bouton Corbeille */}
-      <div className="trash-button-container">
-        <button 
-          onClick={() => setShowTrash(!showTrash)}
-          className={`trash-btn ${showTrash ? 'active' : ''}`}
-        >
-          <i className="fa-solid fa-trash"></i> Corbeille ({getTrashMessages().length})
-        </button>
-      </div>
-
       {/* Navigation des sections */}
       <div className="admin-nav">
         <button
           className={`nav-btn ${activeSection === 'messages' ? 'active' : ''}`}
-          onClick={() => setActiveSection('messages')}
+          onClick={() => {
+            setActiveSection('messages');
+            setShowTrash(false);
+          }}
         >
           <i className="fa-solid fa-envelope"></i> Messages
         </button>
@@ -317,6 +310,20 @@ const AdminDashboard = () => {
           <i className="fa-solid fa-images"></i> Réalisations
         </button>
       </div>
+
+      {/* Bouton Corbeille - Visible seulement dans la section Messages */}
+      {activeSection === 'messages' && (
+        <div className="trash-button-container">
+          <button 
+            onClick={() => setShowTrash(!showTrash)}
+            className={`trash-btn ${showTrash ? 'active' : ''}`}
+          >
+            <i className="fa-solid fa-trash"></i> 
+            <span className="trash-label">{showTrash ? 'Retour aux messages' : 'Corbeille'}</span>
+            {!showTrash && <span className="trash-count">{getTrashMessages().length}</span>}
+          </button>
+        </div>
+      )}
 
       {/* Section Messages */}
       {activeSection === 'messages' && !showTrash && (
