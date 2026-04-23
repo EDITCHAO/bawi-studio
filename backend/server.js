@@ -108,7 +108,29 @@ app.post('/api/admin/login', async (req, res) => {
       return res.status(400).json({ error: 'Mot de passe requis' });
     }
 
-    // Vérifier le mot de passe avec bcrypt
+    // En développement, accepter le mot de passe en clair
+    if (NODE_ENV === 'development') {
+      if (password === '20-86') {
+        console.log('✅ Authentification réussie (mode développement)');
+        const token = jwt.sign({ admin: true }, process.env.JWT_SECRET, {
+          expiresIn: '24h'
+        });
+        return res.json({ 
+          success: true,
+          token,
+          admin: {
+            id: 1,
+            username: 'admin',
+            email: 'admin@bawi-studio.com'
+          }
+        });
+      } else {
+        console.log('❌ Mot de passe invalide');
+        return res.status(401).json({ error: 'Identifiants invalides' });
+      }
+    }
+
+    // En production, vérifier le mot de passe avec bcrypt
     const isValid = await bcrypt.compare(password, process.env.ADMIN_PASSWORD_HASH);
 
     if (!isValid) {
