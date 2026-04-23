@@ -1,0 +1,52 @@
+LOGO BAWI-STUDIO - Instructions
+
+✅ Favicon SVG créé: public/favicon.svg
+
+📋 DESCRIPTION DU LOGO:
+- Cercle avec dégradé violet-indigo (#667eea → #764ba2)
+- Lettre "B" blanche en gras au centre
+- Point décoratif orange (#fbbf24) en haut à droite
+- Design moderne et minimaliste
+
+🎨 COULEURS:
+- Primaire: #667eea (Indigo)
+- Secondaire: #764ba2 (Violet)
+- Accent: #fbbf24 (Orange)
+- Texte: #ffffff (Blanc)
+
+📱 UTILISATION:
+Le favicon s'affiche automatiquement dans:
+- Onglet du navigateur
+- Favoris
+- Barre d'adresse
+- Historique
+
+🔄 POUR CRÉER DES VERSIONS PNG:
+
+Si tu veux des versions PNG (16x16, 32x32, etc.):
+
+1. Ouvre le fichier public/favicon.svg dans un navigateur
+2. Fais un clic droit → Inspecter
+3. Copie le SVG
+4. Va sur https://cloudconvert.com/svg-to-png
+5. Convertis en différentes tailles:
+   - 16x16 (favicon.ico)
+   - 32x32 (favicon-32x32.png)
+   - 192x192 (android-chrome-192x192.png)
+   - 512x512 (android-chrome-512x512.png)
+
+Ou utilise un outil comme:
+- https://realfavicongenerator.net/
+- https://favicon.io/
+
+📝 POUR AJOUTER PLUS DE FORMATS:
+
+Dans index.html, ajoute:
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+
+🎯 RÉSULTAT:
+Le logo "B" avec dégradé violet s'affiche maintenant dans l'onglet du navigateur!
+
+Rafraîchis la page (Ctrl+F5) pour voir le changement.

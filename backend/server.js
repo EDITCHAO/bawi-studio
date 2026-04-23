@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import fileUpload from 'express-fileupload';
 import { createClient } from '@supabase/supabase-js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
@@ -46,6 +47,13 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+app.use(fileUpload({
+  limits: { fileSize: 50 * 1024 * 1024 }, // 50MB max
+  abortOnLimit: true,
+  responseOnLimit: 'Fichier trop volumineux (max 50MB)',
+  useTempFiles: true,
+  tempFileDir: '/tmp/'
+}));
 
 // Middleware de logging
 app.use((req, res, next) => {

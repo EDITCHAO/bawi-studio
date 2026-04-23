@@ -1,0 +1,25 @@
+@echo off
+echo 🚀 Installation de BAWI-STUDIO
+echo ================================
+
+REM Installer les dépendances du frontend
+echo.
+echo 📦 Installation du frontend...
+cd frontend
+call npm install
+cd ..
+
+REM Installer les dépendances du backend
+echo.
+echo 📦 Installation du backend...
+cd backend
+call npm install
+cd ..
+
+echo.
+echo ✅ Installation terminée!
+echo.
+echo Pour démarrer le projet:
+echo   Frontend:  cd frontend ^&^& npm run dev
+echo   Backend:   cd backend ^&^& npm run dev
+pause
