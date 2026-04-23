@@ -31,7 +31,8 @@ const corsOrigins = [
   'https://www.bawi-studio.com',
   'https://bawi-studio.com',
   'https://bawi-studio.onrender.com',
-  'https://bawi-studio-backend.onrender.com'
+  'https://bawi-studio-backend.onrender.com',
+  /^https:\/\/bawi-studio-.*\.vercel\.app$/ // Accepter tous les déploiements Vercel preview
 ];
 
 // En développement, accepter aussi les requêtes sans origin
