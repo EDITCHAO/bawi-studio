@@ -478,23 +478,29 @@ app.get('/api/admin/stats', authenticateToken, async (req, res) => {
 app.post('/api/admin/portfolios/upload', authenticateToken, async (req, res) => {
   try {
     if (!req.files || !req.files.file) {
+      console.error('❌ Aucun fichier fourni');
       return res.status(400).json({ error: 'Aucun fichier fourni' });
     }
 
     const file = req.files.file;
+    console.log('📤 Upload fichier:', { name: file.name, size: file.size, type: file.mimetype });
+
     const fileName = `${Date.now()}-${file.name}`;
 
     // Uploader sur Supabase Storage
     const { data, error: uploadError } = await supabase.storage
       .from('portfolios')
       .upload(fileName, file.data, {
-        contentType: file.mimetype
+        contentType: file.mimetype,
+        upsert: false
       });
 
     if (uploadError) {
-      console.error('Erreur upload Supabase:', uploadError);
-      return res.status(500).json({ error: 'Erreur lors de l\'upload' });
+      console.error('❌ Erreur upload Supabase:', uploadError);
+      return res.status(500).json({ error: `Erreur Supabase: ${uploadError.message}` });
     }
+
+    console.log('✅ Fichier uploadé sur Supabase:', data);
 
     // Obtenir l'URL publique
     const { data: publicData } = supabase.storage
@@ -504,8 +510,8 @@ app.post('/api/admin/portfolios/upload', authenticateToken, async (req, res) => 
     console.log('✅ Image uploadée:', publicData.publicUrl);
     res.json({ success: true, imageUrl: publicData.publicUrl });
   } catch (error) {
-    console.error('Erreur:', error);
-    res.status(500).json({ error: 'Erreur serveur' });
+    console.error('❌ Erreur complète:', error);
+    res.status(500).json({ error: `Erreur serveur: ${error.message}` });
   }
 });
 
